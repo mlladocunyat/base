@@ -1,0 +1,4393 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "description" : "&copy; Deutsche Telekom IoT GmbH. All rights reserved.",
+    "license" : {
+      "name" : "Imprint",
+      "url" : "https://geschaeftskunden.telekom.de/impressum"
+    },
+    "termsOfService" : "true",
+    "title" : "M2M Customer API REST Service",
+    "version" : "m2m-customerapi-restservice"
+  },
+  "externalDocs" : {
+    "description" : "Data Privacy",
+    "url" : "https://portal-m2m.telekom.de/m2m-customer-portal/privacy"
+  },
+  "servers" : [ {
+    "url" : "https://customer-rest-services.api-docs.iot.telekom.com",
+    "description" : "Generated server url"
+  } ],
+  "tags" : [ {
+    "description" : "Root Controller",
+    "name" : "roots"
+  }, {
+    "description" : "Customers Related",
+    "name" : "customers"
+  }, {
+    "description" : "SIM Related",
+    "name" : "sims"
+  }, {
+    "description" : "SIM Transfer Related (* optional service)",
+    "name" : "sim-transfer"
+  } ],
+  "paths" : {
+    "/v1" : {
+      "get" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call gets a list of links for further actions of version 1.</b>\r\n      <br>\r\n      <br>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "getRootInfo",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RootResource"
+                }
+              }
+            },
+            "description" : "Successful response"
+          }
+        },
+        "summary" : "Get Root Info for Version 1",
+        "tags" : [ "roots" ]
+      }
+    },
+    "/v1/partners" : {
+      "get" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call answers with the list of all assigned customers and subunits.</b>\r\n      <br>\r\n      <br>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "getCustomers",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/GetCustomersResultParameters"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Get all allocated Customers from a specific User ID",
+        "tags" : [ "customers" ]
+      }
+    },
+    "/v1/partners/{partnerId}" : {
+      "get" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call retrieves the numbers of SIM cards in specific states, and also link(s) to the SIM List resource containing the proper filter settings if at least one SIM card is in the corresponding state.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n      </ul>\r\n      <br>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "getSimStates",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500384,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/GetSimStatesResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Get SIM States",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/actions" : {
+      "get" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call retrieves a list of all actions of a specific customer, with a default of 10 entries per page.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n         <li>Status: The provided status is invalid.</li>\r\n         <li>Page: Input invalid page number.</li>\r\n         <li>Page: Exceed the max allowed page number of 10000.</li>\r\n         <li>Size: Input invalid size number.</li>\r\n         <li>Size: Exceed the max allowed size number of 100.</li>\r\n         <li>Date: Invalid parameter names for a date time filter.</li>\r\n         <li>Date: dateTo is smaller than dateFrom.</li>\r\n         <li>Date: Incorrect date and time formats.</li>\r\n      <br>\r\n      <h2>Optional search parameters</h2>\r\n      The pattern for every search parameter: \"fieldname:value\". Additional fields can simply be combined by semicolon \";\"<br>\r\n      <br>\r\n      Example: search=status:Deleted;datefrom:2010-03-28T00:00:00.000Z<br>\r\n      <br>\r\n      <b>Supported search fields</b>\r\n      <br>\r\n      <ul>\r\n         <li>status – available values:\r\n            <ul>\r\n               <li value=\"1\">New</li>\r\n               <li value=\"2\">Done</li>\r\n               <li value=\"3\">Rejected</li>\r\n               <li value=\"4\">Open</li>\r\n               <li value=\"5\">Obsolete</li>\r\n            </ul>\r\n         </li><br>\r\n         <li>dateFrom</li>\r\n         <li>dateTo</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "getActionDetails",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500384,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Specify the status of the actions to specific customer. Use ':' to specify status' value.",
+          "example" : "search=status:Deleted",
+          "in" : "query",
+          "name" : "search",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "The number of the specific page of listed action records to specific customer. Max. up to 10000",
+          "example" : "page=1",
+          "in" : "query",
+          "name" : "page",
+          "required" : false,
+          "schema" : {
+            "minimum" : 1,
+            "type" : "integer",
+            "format" : "int64",
+            "default" : 1
+          }
+        }, {
+          "description" : "The amount per page of returned action list records to specific customer. Max. up to 100",
+          "example" : "size=10",
+          "in" : "query",
+          "name" : "size",
+          "required" : false,
+          "schema" : {
+            "maximum" : 100,
+            "minimum" : 1,
+            "type" : "integer",
+            "format" : "int64",
+            "default" : 10
+          }
+        }, {
+          "description" : "The start date time for query. If no date is provided, the date one week ago will be used. All timestamps must have a Z at the end to mark them as UTC. See below example",
+          "example" : "2022-07-14T00:00:00.000Z",
+          "in" : "query",
+          "name" : "dateFrom",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }, {
+          "description" : "The end date time for query. If no date is provided, the current date will be used. All timestamps must have a Z at the end to mark them as UTC. See below example",
+          "example" : "2022-07-14T00:00:00.000Z",
+          "in" : "query",
+          "name" : "dateTo",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }, {
+          "in" : "query",
+          "name" : "timeSpan",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/TimeSpan"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/GetActionListResultParameters"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Get SIM Action List",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/apiusage" : {
+      "get" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call retrieves the current counter value for the API usage of a specific customer.</b>\r\n      <br>\r\n      <ul>\r\n         <li>This call itself is NOT considered for the API usage counting.</li>\r\n      </ul>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "getSimApiUsages",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/GetSimApiUsageResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Get API Usage",
+        "tags" : [ "customers" ]
+      }
+    },
+    "/v1/partners/{partnerId}/pools" : {
+      "get" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call retrieves a list of all pools of the given partnerID.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "getCurrentPoolUsage",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/GetCurrentPoolUsageResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Get Current Pool Usage",
+        "tags" : [ "customers" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims" : {
+      "get" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call retrieves all SIM cards of a specific customer, with a default of 1000 entries per page. Only the ICCID will be shown, additional fields can be requested.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n      </ul>\r\n      <br>\r\n      <h2>Supported additional fields</h2>\r\n      Additional fields can simply be combined by semicolon \";\"<br>\r\n      <br>\r\n      Example: additionalfields=imsi;imei;status;field1;field2;msisdn;ipaddress<br>\r\n      <br>\r\n      <b>Supported additional fields</b>\r\n      <ul>\r\n         <li>imsi</li>\r\n         <li>imei</li>\r\n         <li>status (refering to logical sim status)</li>\r\n         <li>msisdn</li>\r\n         <li>ipaddressconfig</li>\r\n         <li>field1</li>\r\n         <li>field2</li>\r\n         <li>field3</li>\r\n         <li>field4</li>\r\n         <li>field5</li>\r\n         <li>field6</li>\r\n         <li>field7</li>\r\n         <li>field8</li>\r\n         <li>field9</li>\r\n         <li>field10</li>\r\n         <li>simaggregateddata</li>\r\n      </ul>\r\n      <br>\r\n      <h2>Optional search parameters</h2>\r\n      The pattern for every search parameter: \"fieldname:value\". Additional fields can simply be combined by semicolon \";\"<br>\r\n      <br>\r\n      Example: search=field1:dadadada;status:Deleted;changedatefrom:2010-03-28T00:00:00.000Z<br>\r\n      <br>\r\n      <b>Supported search fields</b>\r\n      <ul>\r\n         <li>iccid</li><br>\r\n         <li>status – available values:\r\n            <ul>\r\n               <li value=\"1\">Ordered</li>\r\n               <li value=\"2\">On Stock</li>\r\n               <li value=\"3\">Delivered</li>\r\n               <li value=\"4\">Test</li>\r\n               <li value=\"5\">Productive</li>\r\n               <li value=\"6\">Blocked (automatically)</li>\r\n               <li value=\"7\">Blocked (manually)</li>\r\n               <li value=\"9\">Suspended</li>\r\n               <li value=\"10\">Terminated</li>\r\n               <li value=\"11\">Deleted</li>\r\n               <li value=\"12\">Undefined</li>\r\n               <li value=\"13\">Ordered for stock</li>\r\n               <li value=\"14\">Special Terminated</li>\r\n            </ul>\r\n         </li><br>\r\n         <li>fraudstatus – available values:\r\n            <ul>\r\n               <li value=\"0\">OK</li>\r\n               <li value=\"2\">Alarm</li>\r\n            </ul>\r\n         </li><br>\r\n         <li>limitstatus – available values:\r\n            <ul>\r\n               <li value=\"0\">OK</li>\r\n               <li value=\"1\">Warning</li>\r\n               <li value=\"2\">Alarm</li>\r\n               <li value=\"3\">Suspended</li>\r\n            </ul>\r\n         </li><br>\r\n         <li>field1</li>\r\n         <li>field2</li>\r\n         <li>field3</li>\r\n         <li>field4</li>\r\n         <li>field5</li>\r\n         <li>field6</li>\r\n         <li>field7</li>\r\n         <li>field8</li>\r\n         <li>field9</li>\r\n         <li>field10</li>\r\n         </li><br>\r\n         <li>changedatefrom</li>\r\n         <li>changedateto</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "getSimDetails",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "The number of the specific page of listed SIMs to specific customer. Max. up to 10000",
+          "example" : "page=1",
+          "in" : "query",
+          "name" : "page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "default" : 1
+          }
+        }, {
+          "description" : "The amount per page of returned SIMs to specific customer. Max. up to 10000",
+          "example" : "size=10",
+          "in" : "query",
+          "name" : "size",
+          "required" : false,
+          "schema" : {
+            "maximum" : 10000,
+            "minimum" : 1,
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 1000
+          }
+        }, {
+          "description" : "Specify the conditions of the SIMs to specific customer. Use ':' to specify conditional value and ';' to combine multiple fields.\r\n All timestamps must have a Z at the end to mark them as UTC. e.g. 2022-07-14T00:00:00.000Z",
+          "example" : "search=status:Deleted;field1:dadadada",
+          "in" : "query",
+          "name" : "search",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Specify what additional data to return within SIMs to specific customer. Use ';' to combine multiple fields.",
+          "example" : "additionalfields=imsi;imei;status",
+          "in" : "query",
+          "name" : "additionalfields",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/GetSimListResultParameters"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Get all SIMs of Customer",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/activation" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n  <body>\r\n    <h2>Description</h2>\r\n    <b>This call starts the activation process for one or more (up to 10000) SIM cards.</b>\r\n      <br>\r\n      <br>\r\n      You find the corresponding <em>profile IDs</em> required for parametrisation in your customer portal GUI (mainly in the menu section settings). The <em>offering ID</em> can be found in your partner data section under <em>My Products</em>.\r\n    <br>\r\n    <br>\r\n    <h2>Example Requests</h2>\r\n    <b>With additional values</b>\r\n    <br>\r\n    <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"field1\": \"TestField1\",\r\n      \"iccid\": \"998296987749503\",\r\n      \"staticIpsPerApnList\": [\r\n        {\r\n          \"apnName\": \"testApnName\",\r\n          \"ipv4AddressList\": [\r\n            \"testipv4\"\r\n          ],\r\n          \"ipv6AddressList\": [\r\n            \"testipv6\"\r\n          ]\r\n        }\r\n      ]\r\n    }\r\n  ],\r\n  \"offeringId\": 0,\r\n  \"optionIds\": [\r\n    0\r\n  ],\r\n  \"profileDataParameters\": {\r\n    \"accessProfileId\": 0,\r\n    \"barringProfileId\": 0,\r\n    \"costLimitProfileId\": 0,\r\n    \"fraudProfileId\": 0,\r\n    \"limitProfileId\": 0\r\n  },\r\n  \"startDtRequested\": \"2022-08-31T02:23:14.902Z\",\r\n  \"useTestTariff\": true\r\n}    </pre>\r\n    <br>\r\n    <b>Without additional values</b>\r\n    <br>\r\n    <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"8999829698799917213\"\r\n    },\r\n    {\r\n      \"iccid\": \"8999829698799917214\"\r\n    },\r\n    {\r\n      \"iccid\": \"8999829698799917215\"\r\n    }\r\n  ],\r\n  \"offeringId\": 0,\r\n  \"useTestTariff\": false\r\n}    </pre>\r\n    <br>\r\n    <b>With activation template only</b>\r\n    <br>\r\n    <pre>\r\n{\r\n  \"activationTemplateId\": 755338873,\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"8999829698799917213\"\r\n    },\r\n    {\r\n      \"iccid\": \"8999829698799917214\"\r\n    },\r\n    {\r\n      \"iccid\": \"8999829698799917215\"\r\n    }\r\n  ],\r\n  \"useTestTariff\": false\r\n}      </pre>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n         <li>SIM identifier: No identifier provided.</li>\r\n         <li>SIM identifier: Duplicate identifiers provided.</li>\r\n         <li>SIM identifier: Mixed identifiers e.a. ICCID and IMSI in one request.</li>\r\n         <li>SIM identifier: Number of identifiers exceeds the configured max. value.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given identifier(s).</li>\r\n         <li>SIM identifier: SIM(s) for given identifier(s) do not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n         <li>SIM status: SIM(s) are not in a valid state.</li>\r\n         <li>Additional Usage/Session Limit: Invalid usage unit provided.</li>\r\n         <li>Additional Usage/Session Limit: Values must be zero or positive.</li>\r\n         <li>Open workflow: There is an open workflow for the selected SIM(s).</li>\r\n         <li>Access: Could not find any access profile with a valid status.</li>\r\n         <li>Fraud: Could not find any fraud profile with a valid status.</li>\r\n         <li>Limit: Could not find any limit profile with a valid status.</li>\r\n         <li>Network: Could not find any network profile with a valid status.</li>\r\n         <li>Cost limit: Could not find any cost limit profile with a valid status.</li>\r\n         <li>Offering: Offering is restricted for this SIM action.</li>\r\n         <li>IP addresses: Some submitted IP-Addresses are already taken.</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "activateSim",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimActivationParameters"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "SIM Activation",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/block" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call blocks one or more (up to 10000) SIM cards.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Example Request</h2>\r\n      <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749504\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749505\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749506\"\r\n    }\r\n  ]\r\n}      </pre>\r\n      <br>\r\n      <h2>Possible validation errors</h2> \r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li> \r\n         <li>SIM identifier: No identifier provided.</li>\r\n         <li>SIM identifier: Duplicate identifiers provided.</li>\r\n         <li>SIM identifier: Mixed identifiers e.a. ICCID and IMSI in one request.</li>\r\n         <li>SIM identifier: Number of identifiers exceeds the configured max. value.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given identifier(s).</li>\r\n         <li>SIM identifier: SIM(s) for given identifier(s) do not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n         <li>SIM status: SIM(s) are not in a valid state.</li>\r\n         <li>Test tariff: SIM(s) cannot be blocked while in test.</li>\r\n         <li>Open workflow: There is an open workflow for the selected SIM(s).</li> \r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "blockSim",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimBlockParameter"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "SIM Block",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/fraudreset" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call resets the fraud status of specific SIM cards.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Example Request</h2>\r\n      <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749504\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749505\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749506\"\r\n    }\r\n  ]\r\n}      </pre>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li> \r\n         <li>SIM identifier: No identifier provided.</li>\r\n         <li>SIM identifier: Duplicate identifiers provided.</li>\r\n         <li>SIM identifier: Mixed identifiers e.a. ICCID and IMSI in one request.</li>\r\n         <li>SIM identifier: Number of identifiers exceeds the configured max. value.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given identifier(s).</li>\r\n         <li>SIM identifier: SIM(s) for given identifier(s) do not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n         <li>SIM status: One or more SIM cards are automatically blocked.</li>\r\n         <li>Fraud state: One or more SIM cards do not have a fraud state which could be reset.</li>\r\n         <li>Fraud profile: SIM cards have different fraud profiles assigned.</li>\r\n      </ul>\r\n      <br>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "resetFraudStatus",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500384,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimResetFraudStatusParameters"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Reset Fraud Status",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/limitoverride" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call overrides (temporarily deactivates) the current limit status of specific SIM cards with a limit profile.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Example Requests</h2>\r\n      <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749504\"\r\n    }\r\n  ]\r\n}      </pre>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n         <li>SIM identifier: No identifier provided.</li>\r\n         <li>SIM identifier: Duplicate identifiers provided.</li>\r\n         <li>SIM identifier: Mixed identifiers e.a. ICCID and IMSI in one request.</li>\r\n         <li>SIM identifier: Number of identifiers exceeds the configured max. value.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given identifier(s).</li>\r\n         <li>SIM identifier: SIM(s) for given identifier(s) do not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n         <li>SIM status: SIM(s) are not in a valid state.</li>\r\n         <li>Open workflow: There is an open workflow for the selected SIM(s).</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "simOverrideLimitStatus",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimOverrideLimitStatusParameters"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MultipleSignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Override Limit Status",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/limitreset" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call resets the limit status of specific SIM cards.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Example Request</h2>\r\n      <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749504\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749505\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749506\"\r\n    }\r\n  ]\r\n}      </pre>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li> \r\n         <li>SIM identifier: No identifier provided.</li>\r\n         <li>SIM identifier: Duplicate identifiers provided.</li>\r\n         <li>SIM identifier: Mixed identifiers e.a. ICCID and IMSI in one request.</li>\r\n         <li>SIM identifier: Number of identifiers exceeds the configured max. value.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given identifier(s).</li>\r\n         <li>SIM identifier: SIM(s) for given identifier(s) do not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n         <li>SIM status: One or more SIM cards are automatically blocked.</li>\r\n         <li>Restriction status: One or more SIM(s) are in invalid restricted state. Valid states are None (0), Data Restricted (2)</li>\r\n         <li>Limit state: One or more SIM cards do not have a limit state which could be reset.</li>\r\n         <li>Limit profile: SIM cards have different limit profiles assigned.</li>\r\n      </ul>\r\n      <br>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "resetLimitStatus",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500384,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimResetLimitStatusParameters"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Reset Limit Status",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/limitrestore" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call restores the limit status of specific SIM cards.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Example Request</h2>\r\n      <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749504\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749505\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749506\"\r\n    }\r\n  ]\r\n}      </pre>\r\n      <br>\r\n      <h2>Possible validation errors</h2> \r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li> \r\n         <li>SIM identifier: No identifier provided.</li>\r\n         <li>SIM identifier: Duplicate identifiers provided.</li>\r\n         <li>SIM identifier: Mixed identifiers e.a. ICCID and IMSI in one request.</li>\r\n         <li>SIM identifier: Number of identifiers exceeds the configured max. value.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given identifier(s).</li>\r\n         <li>SIM identifier: SIM(s) for given identifier(s) do not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n         <li>SIM status: SIM(s) are not in a valid SIM or SIM service state.</li>\r\n         <li>SIM limit suspension: SIM(s) do not have their limit suspended.</li>\r\n         <li>Open workflow: There is an open workflow for the selected SIM(s).</li> \r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "simRestoreLimitStatus",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimRestoreLimitStatusParameters"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MultipleSignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Restore Limit Status",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/order" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n  <body>\r\n    <h2>Description</h2>\r\n    <b>This call starts the order process for new SIM cards of a specific SIM material.</b>\r\n    <br>\r\n    <br>\r\n    <h2>Example Requests</h2>\r\n    <b>Only mandatory attributes.</b>\r\n    <br>\r\n    <pre>\r\n{\r\n  \"simType\": \"canuseeme\",\r\n  \"numberOfSims\": 10,\r\n  \"startDtRequested\": \"2022-10-10\",\r\n  \"shippingAddress\": {\r\n    \"companyName\": \"XZeus\",\r\n    \"firstName\": \"John\",\r\n    \"lastName\": \"Dao\",\r\n    \"salutation\": \"Mr.\",\r\n    \"street\": \"FuXing\",\r\n    \"houseNumber\": \"5978\",\r\n    \"postalCode\": \"987\",\r\n    \"city\": \"Taipei\",\r\n    \"country\": \"Taiwan\"\r\n  }\r\n}    </pre>\r\n    <br>\r\n    <b>With additional attributes.</b>\r\n    <br>\r\n    <pre>\r\n{\r\n  \"simType\": \"canuseeme\",\r\n  \"numberOfSims\": 10,\r\n  \"startDtRequested\": \"2022-10-10\",\r\n  \"shippingAddress\": {\r\n    \"companyName\": \"XZeus\",\r\n    \"firstName\": \"John\",\r\n    \"lastName\": \"Dao\",\r\n    \"salutation\": \"Mr.\",\r\n    \"street\": \"FuXing\",\r\n    \"houseNumber\": \"5978\",\r\n    \"postalCode\": \"987\",\r\n    \"city\": \"Taipei\",\r\n    \"country\": \"Taiwan\",\r\n    \"attention\": \"John Dao\",\r\n    \"additionToAddress1\": \"Ally 160\",\r\n    \"additionToAddress2\": \"Lane 3\",\r\n    \"additionalInformation\": \"thanks\"\r\n  },\r\n  \"note\": \"Please send to 2nd floor directly\",\r\n  \"notificationEmailAddress\": \"john.dao@xzeus.com\",\r\n}  </pre>\r\n  <br>\r\n  <h2>Possible validation errors</h2>\r\n  <ul>\r\n    <li>Service unavailable: Maintenance mode activated.</li>    <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n    <li>Partner ID: Invalid partner ID.</li>\r\n    <li>Partner ID: User not authorized for this partner.</li>\r\n    <li>Mandatory fields must not be null</li>\r\n    <li>The size of this field is too large</li>\r\n    <li>Unable to parse numeric field elements</li>\r\n    <li>The provided field value is invalid</li>\r\n    <li>User is not assigned to the customer</li>\r\n    <li>The provided SIM Type status is not active</li>\r\n    <li>The provided SIM Type is not related to the customer</li>\r\n    <li>The given email address is not valid</li>\r\n    <li>The amount of SIM cards must be a multiple of the package size</li>\r\n    <li>The ordered amount of SIM cards under cuts the minimum order quantity of minimum number per order of SIM cards</li>\r\n    <li>The monthly quantity of max allowed number of SIM orders has been exceeded</li>\r\n    <li>Insufficient number of SIM cards on stock</li>\r\n    <li>The desired delivery date has to be after the minimal delivery time</li>\r\n    <li>The preferred delivery date is a holiday</li>\r\n    <li>The preferred delivery date must not be on a weekend</li>\r\n    <li>The desired delivery date has to be after the minimal delivery time</li>\r\n  </ul>\r\n</body>\r\n</html>\r\n",
+        "operationId" : "simOrder",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500384,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimOrderParameter"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "SIM Order",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/productivestate" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call sets one or more (up to 10000) SIM cards in productive state.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Example Request</h2>\r\n      <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749504\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749505\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749506\"\r\n    }\r\n  ]\r\n}      </pre>\r\n      <br>\r\n      <h2>Possible validation errors</h2> \r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li> \r\n         <li>SIM identifier: No identifier provided.</li>\r\n         <li>SIM identifier: Duplicate identifiers provided.</li>\r\n         <li>SIM identifier: Mixed identifiers e.a. ICCID and IMSI in one request.</li>\r\n         <li>SIM identifier: Number of identifiers exceeds the configured max. value.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given identifier(s).</li>\r\n         <li>SIM identifier: SIM(s) for given identifier(s) do not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n         <li>SIM status: SIM(s) are not in a valid SIM or SIM service state. Valid status (techn.) is active (1). Valid status (comm.) is active (1).</li>\r\n         <li>SIM status: Service connected to one or more SIM cards is not a test tariffs.</li>\r\n         <li>Open workflow: There is an open 80059 - Set SIM to productive for the selected SIM(s).</li> \r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "enterProductiveState",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimEnterPrdouctiveStateParameter"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Enter Productive State",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/profiles" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call adds, changes or deletes different types of profiles on specific SIM cards.</b>\r\n      <br>\r\n      <br>\r\n      You find the corresponding <em>profile IDs</em> required for parametrisation in your customer portal GUI (mainly in the menu section settings). Use \"delete\" instead of a profile ID to remove a profile from SIM cards.\r\n      <br>\r\n      <br>\r\n      <h2>Example Requests</h2>\r\n      <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749504\"\r\n    }\r\n  ],\r\n  \"profileParameters\": {\r\n    \"accessProfileId\": \"755436629\",\r\n    \"limitProfileId\": \"delete\"\r\n  }\r\n}      </pre>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n         <li>SIM identifier: No identifier provided.</li>\r\n         <li>SIM identifier: Duplicate identifiers provided.</li>\r\n         <li>SIM identifier: Mixed identifiers e.a. ICCID and IMSI in one request.</li>\r\n         <li>SIM identifier: Number of identifiers exceeds the configured max. value.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given identifier(s).</li>\r\n         <li>SIM identifier: SIM(s) for given identifier(s) do not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n         <li>SIM status: SIM(s) are not in a valid state.</li>\r\n         <li>Open workflow: There is an open workflow for the selected SIM(s).</li>\r\n         <li>Profile: At least one profile must be set.</li>\r\n         <li>Profile: Profile contains invalid profile id(s).</li>\r\n         <li>Profile: Invalid limit profile id.</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "modifySimProfiles",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimModifyProfilesParameters"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "SIM Modify Profiles",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/remarks" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call modifies the remark fields for specific SIM cards.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Example Requests</h2>\r\n      <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\",\r\n      \"field1\": \"TestRemark1\"\r\n    }\r\n  ]\r\n}      </pre>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n         <li>SIM identifier: No identifier provided.</li>\r\n         <li>SIM identifier: Duplicate identifiers provided.</li>\r\n         <li>SIM identifier: Mixed identifiers e.a. ICCID and IMSI in one request.</li>\r\n         <li>SIM identifier: Number of identifiers exceeds the configured max. value.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given identifier(s).</li>\r\n         <li>SIM identifier: SIM(s) for given identifier(s) do not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n         <li>SIM status: SIM(s) are not in a valid state.</li>\r\n         <li>Open workflow: There is an open workflow for the selected SIM(s).</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "simModifyRemarks",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimModifyRemarksParameters"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "SIM Modify Remarks",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/restrict" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This optional call restricts B2B data for selected SIM cards.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Example Request</h2>\r\n      <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749504\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749505\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749506\"\r\n    }\r\n  ]\r\n}      </pre>\r\n      <br>\r\n      <h2>Possible validation errors</h2> \r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li> \r\n         <li>SIM identifier: No identifier provided.</li>\r\n         <li>SIM identifier: Duplicate identifiers provided.</li>\r\n         <li>SIM identifier: Mixed identifiers e.a. ICCID and IMSI in one request.</li>\r\n         <li>SIM identifier: Number of identifiers exceeds the configured max. value.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given identifier(s).</li>\r\n         <li>SIM identifier: SIM(s) for given identifier(s) do not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n         <li>SIM status: SIM(s) are not in a valid SIM or SIM service state. Valid status (techn.) is active (1). Valid status (comm.) is active (1).</li>\r\n         <li>Open workflow: There is an open 80130 - Change SIM Restriction workflow (in restrict SIM mode) for the selected SIM(s).</li> \r\n         <li>Customer: The customer is not allowed to trigger a SIM Restriction.</li> \r\n         <li>Restriction status: One or more SIM(s) are in invalid restricted state. Valid states are None (0), Speed-Step-Down (1).</li> \r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "restrictSim",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimRestrictParameter"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "SIM Restrict",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/simallocation" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      This call moves specific SIM cards from a customer (superunit) to a corresponding subunit, et vice versa.\r\n      <br>\r\n      <br>\r\n      <b>Supported SIM states:</b>\r\n      <ul>\r\n         <li>Delivered SIM cards (inactive SIMs - no service connected to the SIM).</li>         <li>Activated SIM cards (service status is 1 (active) or 6 (deactivated).</li>\r\n      </ul>\r\n      <b>Point of time when SIM cards are being moved:</b>\r\n      <ul>\r\n         <li>Instantly -> request contains delivered SIM cards only.</li>         <li>Next day -> request contains activated SIM cards only. The target unit does not have a different account (super - and subunit share the invoice).</li>\r\n         <li>Beginning of next month/next billing period -> request contains activated SIM cards only. The target unit has a different account (super - and subunit do not share the invoice).</li>\r\n      </ul>\r\n      <b>Note:</b> in case of a mixed request (delivered + active SIM cards) the execution time is either at the beginning of the next month or on the next day, depending on whether the target unit has own invoicing or not.\r\n      <br>\r\n      <h2>Example Requests</h2>\r\n      <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749504\"\r\n    }\r\n  ],\r\n  \"recipient\": 500082\r\n}      </pre>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n         <li>SIM identifier: No identifier provided.</li>\r\n         <li>SIM identifier: Duplicate identifiers provided.</li>\r\n         <li>SIM identifier: Mixed identifiers e.a. ICCID and IMSI in one request.</li>\r\n         <li>SIM identifier: Number of identifiers exceeds the configured max. value.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given identifier(s).</li>\r\n         <li>SIM identifier: SIM(s) for given identifier(s) do not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n         <li>SIM status: SIM(s) are not in a valid state.</li>\r\n         <li>Open workflow: There is an open workflow for the selected SIM(s).</li>\r\n         <li>Recipient: Recipient is not a valid target.</li>\r\n         <li>Recipient: Recipient is terminated.</li>\r\n         <li>Offering: Offering is not valid/blacklisted for the recipient.</li>\r\n         <li>Option offering: One or more option offerings are not valid/blacklisted for the recipient.</li>\r\n         <li>Data profile: One or more of the SIMs contain invalid data profiles for the recipient (APNs not allowed, profile not found or invalid customer).</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "moveSim",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimMoveParameters"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "SIM Move",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/simtransfer" : {
+      "get" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call retrieves a list of all SIM transfers of a specific customer.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n         <li>Page: Input invalid page number.</li>\r\n         <li>Page: Exceed the max allowed page number of 10000.</li>\r\n         <li>Size: Input invalid size number.</li>\r\n         <li>Size: Exceed the max allowed size number of 50.</li>\r\n         <li>No SIM Transfer found for the given customer.</li>         \r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "getSimTransferList",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "The number of the specific page of listed transfers to specific customer. Max. up to 10000",
+          "example" : "page=1",
+          "in" : "query",
+          "name" : "page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "default" : 1
+          }
+        }, {
+          "description" : "The amount per page of returned transfers to specific customer. Max. up to 10000",
+          "example" : "size=10",
+          "in" : "query",
+          "name" : "size",
+          "required" : false,
+          "schema" : {
+            "maximum" : 10000,
+            "minimum" : 1,
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 20
+          }
+        }, {
+          "description" : "Specify the status of the transfers to specific customer",
+          "example" : "search=ACTIVE",
+          "in" : "query",
+          "name" : "search",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "SimTransferList" : {
+                      "$ref" : "#/components/schemas/GetSimTransferListResult"
+                    }
+                  }
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Get SIM Transfer List",
+        "tags" : [ "sim-transfer" ]
+      },
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call starts the transfer process of specific SIM cards from one customer to another one.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Example Requests</h2>\r\n      <b>With additional values</b>\r\n      <br>\r\n      <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    }\r\n  ],\r\n  \"recipient\": \"500384\",\r\n  \"notePartnerA\": \"transfer this SIM card\",\r\n  \"transferRemark01\": \"true\"\r\n}      </pre>\r\n      <br>\r\n      <b>Without additional values</b>\r\n      <br>\r\n      <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    }\r\n  ],\r\n  \"recipient\": \"500384\"\r\n}      </pre>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n         <li>Partner ID: User is assigned to Subunit.</li>\r\n         <li>Partner ID: No PLS booked for customer with partner ID.</li>\r\n         <li>SIM identifier: No identifier provided.</li>\r\n         <li>SIM identifier: Duplicate identifiers provided.</li>\r\n         <li>SIM identifier: Mixed identifiers e.a. ICCID and IMSI in one request.</li>\r\n         <li>SIM identifier: Number of identifiers exceeds the configured max. value.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given identifier(s).</li>\r\n         <li>SIM identifier: SIM(s) for given identifier(s) do not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n         <li>SIM status: SIM(s) are not in a valid state.</li>\r\n         <li>Recipient: Invalid recipient partner ID.</li>\r\n         <li>Recipient: No recipient provided.</li>\r\n         <li>Recipient: No valid relation exists between sender partner ID and recipient.</li>\r\n         <li>notePartnerA: Contents of a note exceed the max allowed characters.</li>\r\n         <li>transferRemark: Invalid transfer remark, the allowed value is a boolean.</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "createSimTransfer",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimTransferCreationParameters"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SimTransferCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Create SIM Transfer",
+        "tags" : [ "sim-transfer" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/simtransfer/{transactionId}" : {
+      "get" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call retrieves the details of a specific SIM transfer.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n         <li>Page: Input invalid page number.</li>\r\n         <li>Page: Exceed the max allowed page number of 10000.</li>\r\n         <li>Size: Input invalid size number.</li>\r\n         <li>Size: Exceed the max allowed size number of 50.</li>   \r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "getSimTransferDetails",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Transaction ID of the specific transfer",
+          "example" : 1001092333,
+          "in" : "path",
+          "name" : "transactionId",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "description" : "The number of the specific page of listed SIMs involved in specific SIM transfer. Max. up to 10000",
+          "example" : "page=1",
+          "in" : "query",
+          "name" : "page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "default" : 1
+          }
+        }, {
+          "description" : "The amount per page of returned SIMs involved in specific SIM transfer. Max. up to 10000",
+          "example" : "size=10",
+          "in" : "query",
+          "name" : "size",
+          "required" : false,
+          "schema" : {
+            "maximum" : 10000,
+            "minimum" : 1,
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 1000
+          }
+        } ],
+        "responses" : {
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "SimTransferDetails" : {
+                      "$ref" : "#/components/schemas/GetSimTransferDetailResult"
+                    }
+                  }
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Get SIM Transfer Details",
+        "tags" : [ "sim-transfer" ]
+      },
+      "patch" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call updates a specific open SIM transfer – to 'abort' (as sender), or 'accept'/'reject' (as receiver) the transfer.</b>\r\n      <br>\r\n      <br>\r\n      You find the corresponding <em>profile IDs</em> required for parametrisation in your customer portal GUI (mainly in the menu section settings). The <em>offering ID</em> can be found in your partner data section under <em>My Products</em>.\r\n      <br>\r\n      <br>\r\n      <h2>Example Requests</h2>\r\n      <b>Update transfer from a sender</b>\r\n      <br>\r\n      <pre>\r\n{\r\n  \"action\": \"abort\"\r\n}      </pre>\r\n      <br>\r\n      <b>Update transfer from a receiver</b>\r\n      <br>\r\n      <pre>\r\n{\r\n  \"action\": \"accept\",\r\n  \"transferRemark01\": true\r\n}      </pre>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n         <li>Partner ID: User is assigned to Subunit.</li>\r\n         <li>Partner ID: No PLS booked for customer with partner ID.</li>\r\n         <li>Action: The provided action is invalid.</li>\r\n         <li>Transaction ID: Could not find any transactions with the provided ID.</li>\r\n         <li>Transaction ID: No active transaction found.</li>\r\n         <li>Transaction ID: The customer does not match the provided transaction.</li>\r\n         <li>Access: Could not find any access profile with a valid status.</li>\r\n         <li>Fraud: Could not find any fraud profile with a valid status.</li>\r\n         <li>Limit: Could not find any limit profile with a valid status.</li>\r\n         <li>Network: Could not find any network profile with a valid status.</li>\r\n         <li>Cost limit: Could not find any cost limit profile with a valid status.</li>\r\n         <li>Note: Contents of a note exceed the max allowed characters.</li>\r\n         <li>Remark: Contents of a note exceed the max allowed characters.</li>\r\n         <li>TransferRemark: Invalid transfer remark, the allowed value is a boolean.</li>\r\n         <li>As the sending partner, you can only 'abort' the transaction.</li>\r\n         <li>As the receiving partner, you can only 'accept' or 'reject' the transaction.</li>\r\n         <li>When choosing the action 'abort', it is not required to add any notes.</li>\r\n         <li>When choosing the action 'abort', it is not required to set any SIM related properties.</li>\r\n         <li>When choosing the action 'reject', it is not required to set any SIM related properties.</li>\r\n         <li>Offering: Offering is restricted for this SIM action.</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "updateSimTransfer",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Transaction ID of the specific transfer",
+          "example" : 1001092333,
+          "in" : "path",
+          "name" : "transactionId",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimTransferUpdateParameters"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "UpdateSimTransfer" : {
+                      "$ref" : "#/components/schemas/UpdateSimTransferResult"
+                    }
+                  }
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Update SIM Transfer",
+        "tags" : [ "sim-transfer" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/suspension" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call suspends the current tariff of specific SIM cards.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Example Requests</h2>\r\n      <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749504\"\r\n    }\r\n  ]\r\n}\r\n      </pre>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n         <li>SIM identifier: No identifier provided.</li>\r\n         <li>SIM identifier: Duplicate identifiers provided.</li>\r\n         <li>SIM identifier: Mixed identifiers e.a. ICCID and IMSI in one request.</li>\r\n         <li>SIM identifier: Number of identifiers exceeds the configured max. value.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given identifier(s).</li>\r\n         <li>SIM identifier: SIM(s) for given identifier(s) do not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n         <li>SIM status: SIM(s) are not in a valid state.</li>\r\n         <li>Open workflow: There is an open workflow for the selected SIM(s).</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "suspendSim",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimSuspendParameters"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "SIM Suspend",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/tariffchange" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call changes the active tariff and options for one or more (up to 10000) SIM cards.</b>\r\n      <br>\r\n      <br>\r\n      You find the corresponding <em>profile IDs</em> required for parametrisation in your customer portal GUI (mainly in the menu section settings). The <em>offering ID</em> can be found in your partner data section under <em>My Products</em>.\r\n      <br>\r\n      <br>\r\n      <h2>Example Requests</h2>\r\n      <b>With additional values</b>\r\n      <br>\r\n      <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749504\"\r\n    }\r\n  ],\r\n  \"offeringId\": 800008266,\r\n  \"optionIds\": [\r\n    800006825,\r\n    800006833,\r\n    800006829\r\n  ],\r\n  \"startDtRequested\": \"2032-03-24T12:45:49.538Z\"\r\n}      </pre>\r\n      <br>\r\n      <b>SIM identifier only</b>\r\n      <br>\r\n      <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749504\"\r\n    }\r\n  ],\r\n  \"offeringId\": 800008266\r\n}      </pre>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n         <li>SIM identifier: No identifier provided.</li>\r\n         <li>SIM identifier: Duplicate identifiers provided.</li>\r\n         <li>SIM identifier: Mixed identifiers e.a. ICCID and IMSI in one request.</li>\r\n         <li>SIM identifier: Number of identifiers exceeds the configured max. value.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given identifier(s).</li>\r\n         <li>SIM identifier: SIM(s) for given identifier(s) do not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n         <li>SIM status: SIM(s) are not in a valid state.</li>\r\n         <li>Additional Usage/Session Limit: Invalid usage unit provided.</li>\r\n         <li>Additional Usage/Session Limit: Values must be zero or positive.</li>\r\n         <li>Open workflow: There is an open workflow for the selected SIM(s).</li>\r\n         <li>Date: Incorrect date and time formats.</li>\r\n         <li>OfferingId: Invalid offering ID.</li>\r\n         <li>Offering: Offering is restricted for this SIM action.</li>\r\n         <li>OptionId: Invalid option ID.</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "tariffChange",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimChangeTariffParameter"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "SIM Change Tariff",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/termination" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call terminates specific active SIM cards (up to 10000), as standard termination or special termination.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Example Requests</h2>\r\n      <b>With special termination</b>\r\n      <pre>\r\n{\r\n  \"specialTermination\": true,\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749504\"\r\n    }\r\n  ]\r\n}      </pre>\r\n      <br>\r\n      <b>Without special termination</b>\r\n      <br>\r\n      <pre>\r\n{\r\n  \"specialTermination\": false,\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749504\"\r\n    }\r\n  ]\r\n}      </pre>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n         <li>SIM identifier: No identifier provided.</li>\r\n         <li>SIM identifier: Duplicate identifiers provided.</li>\r\n         <li>SIM identifier: Mixed identifiers e.a. ICCID and IMSI in one request.</li>\r\n         <li>SIM identifier: Number of identifiers exceeds the configured max. value.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given identifier(s).</li>\r\n         <li>SIM identifier: SIM(s) for given identifier(s) do not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n         <li>SIM status: SIM(s) are not in a valid state.</li>\r\n         <li>Open workflow: There is an open workflow for the selected SIM(s).</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "terminateSim",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimTerminationParameters"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "SIM Termination",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/unblock" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n  <body>\r\n    <h2>Description</h2>\r\n    <b>This call unblocks specific SIM cards and sets them active again.</b>\r\n    <br>\r\n    <br>\r\n    <h2>Example Requests</h2>\r\n    <b>With additional limit values</b>\r\n    <br>\r\n    <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749504\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749505\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749506\"\r\n    }\r\n  ],\r\n  \"additionalSessionLimit\": 10,\r\n  \"additionalUsageLimitValue\": 100,\r\n  \"unit\": \"MB\"\r\n}    </pre>\r\n    <br>\r\n    <b>SIM identifier only</b>\r\n    <br>\r\n    <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749504\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749505\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749506\"\r\n    }\r\n  ]\r\n}  </pre>\r\n  <br>\r\n  <h2>Possible validation errors</h2>\r\n  <ul>\r\n     <li>Service unavailable: Maintenance mode activated.</li>    <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n    <li>Partner ID: Invalid partner ID.</li>\r\n    <li>Partner ID: User not authorized for this partner.</li>\r\n    <li>SIM identifier: No identifier provided.</li>\r\n    <li>SIM identifier: Duplicate identifiers provided.</li>\r\n    <li>SIM identifier: Mixed identifiers e.a. ICCID and IMSI in one request.</li>\r\n    <li>SIM identifier: Number of identifiers exceeds the configured max. value.</li>\r\n    <li>SIM identifier: SIM(s) do not exist for given identifier(s).</li>\r\n    <li>SIM identifier: SIM(s) for given identifier(s) do not belong to the provided partner ID.</li>\r\n    <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n    <li>SIM status: SIM(s) are not in a valid state.</li>\r\n    <li>Additional Usage/Session Limit: Invalid usage unit provided.</li>\r\n    <li>Additional Usage/Session Limit: Values must be zero or positive.</li>\r\n    <li>Open workflow: There is an open workflow for the selected SIM(s).</li>\r\n    <li>Requested operation not allowed for suspended SIM cards.</li>\r\n  </ul>\r\n</body>\r\n</html>\r\n",
+        "operationId" : "unblockSim",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimUnblockParameter"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "SIM Unblock",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/unrestrict" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This optional call unrestricts (allows) B2B data for selected SIM cards.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Example Request</h2>\r\n      <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749504\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749505\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749506\"\r\n    }\r\n  ]\r\n}      </pre>\r\n      <br>\r\n      <h2>Possible validation errors</h2> \r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li> \r\n         <li>SIM identifier: No identifier provided.</li>\r\n         <li>SIM identifier: Duplicate identifiers provided.</li>\r\n         <li>SIM identifier: Mixed identifiers e.a. ICCID and IMSI in one request.</li>\r\n         <li>SIM identifier: Number of identifiers exceeds the configured max. value.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given identifier(s).</li>\r\n         <li>SIM identifier: SIM(s) for given identifier(s) do not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n         <li>SIM status: SIM(s) are not in a valid SIM or SIM service state. Valid status (techn.) is active (1). Valid status (comm.) is active (1).</li>\r\n         <li>Open workflow: There is an open 80130 - Change SIM Restriction workflow (in unrestrict SIM mode) for the selected SIM(s).</li> \r\n         <li>Customer: The customer is not allowed to trigger a SIM Unrestriction.</li> \r\n         <li>Restriction status: One or more SIM(s) are in invalid restricted state. Valid states are Speed-Step-Down (1), DR (2).</li> \r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "unrestrictSim",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimUnrestrictParameter"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "SIM Unrestrict",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/unsuspension" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call unsuspends specific SIM cards and sets their normal tariff to active again.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Example Requests</h2>\r\n      <pre>\r\n{\r\n  \"iccidParameters\": [\r\n    {\r\n      \"iccid\": \"998296987749503\"\r\n    },\r\n    {\r\n      \"iccid\": \"998296987749504\"\r\n    }\r\n  ]\r\n}      </pre>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n         <li>SIM identifier: No identifier provided.</li>\r\n         <li>SIM identifier: Duplicate identifiers provided.</li>\r\n         <li>SIM identifier: Mixed identifiers e.a. ICCID and IMSI in one request.</li>\r\n         <li>SIM identifier: Number of identifiers exceeds the configured max. value.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given identifier(s).</li>\r\n         <li>SIM identifier: SIM(s) for given identifier(s) do not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n         <li>SIM status: SIM(s) are not in a valid state.</li>\r\n         <li>Open workflow: There is an open workflow for the selected SIM(s).</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "unsuspendSim",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimUnSuspendParameters"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "SIM Unsuspend",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/actions/{actionId}" : {
+      "get" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call retrieves the current status of a specific action. If the action is cancellable, the result also contains a link to the corresponding cancel action.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n          <li>Service unavailable: Maintenance mode activated.</li>          <li>Partner ID: Invalid partner ID.</li>\r\n          <li>Partner ID: User not authorized for this partner.</li>\r\n          <li>Action ID: User's partner ID has no access to requested action ID.</li>\r\n          <li>Action ID: Invalid action ID.</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "getActionStatus",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "ID of the specific SIM action",
+          "example" : 704705602,
+          "in" : "path",
+          "name" : "actionId",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionStatus"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Get SIM Action Status",
+        "tags" : [ "sims" ]
+      },
+      "patch" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call cancels a specific open action for a SIM card.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Example Requests</h2>\r\n      <pre>\r\n{\r\n  \"status\": \"cancelled\"\r\n}      </pre>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n          <li>Service unavailable: Maintenance mode activated.</li>          <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n          <li>Partner ID: Invalid partner ID.</li>\r\n          <li>Partner ID: User not authorized for this partner.</li>\r\n          <li>Action ID: User's partner ID has no access to requested action ID.</li>\r\n          <li>Action ID: Invalid action ID.</li>\r\n          <li>Workflow: Corresponding workflow doesn't exist.</li>\r\n          <li>Workflow: Corresponding workflow doesn't support cancellation.</li>\r\n          <li>Workflow: Corresponding workflow is already finished (done).</li>\r\n          <li>Workflow: Point of no return has been passed. Process cannot be cancelled as of now.</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "cancel",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "ID of the specific SIM action",
+          "example" : 704705602,
+          "in" : "path",
+          "name" : "actionId",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SimCancelParameter"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "SIM Action Cancellation",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/{iccid}" : {
+      "get" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call retrieves detail information of a specific SIM card.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given ICCID.</li>\r\n         <li>SIM identifier: SIM(s) for given ICCID do not belong to the provided partner ID.</li>\r\n         <li>RefreshSession: Invalid refresh session value, must be a boolean.</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "getSimDetails_1",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "ICCID value of the SIM",
+          "example" : 998296987749503,
+          "in" : "path",
+          "name" : "iccid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/GetSimDetailsResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Get SIM Details",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/{iccid}/hlrcheck" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This method allows you to check the SIM status directly in the HLR. The request is asynchroneous. You can see the updated data with a call to simDetails.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li> \r\n         <li>SIM identifier: ICCID does not exist or does not belong to given partner ID.</li>\r\n         <li>SIM status: SIM is not in a valid SIM or SIM service state. Valid status (techn.) is active (1), termination marked (7), tariff change marked (17), special termination marked (18), option change marked (20), IP based billing operations marked (22).</li>         <li>SIM service function: checkSimInHlr is not supported for SIM card.</li>\r\n         <li>HLR request frequency: Too frequent HLR requests.</li>\r\n      </ul>\r\n      <br>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "checkSimInHlr",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "ICCID value of the SIM",
+          "example" : 998296987749503,
+          "in" : "path",
+          "name" : "iccid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Check SIM in HLR",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/{iccid}/hlrreset" : {
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This method allows you to reset the SIM card directly in the HLR. You can check the successful reset in the output of simDetails.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li> \r\n         <li>SIM identifier: ICCID does not exist or does not belong to given partner ID.</li>\r\n         <li>SIM status: SIM is not in a valid SIM or SIM service state. Valid status (techn.) is active (1), termination marked (7), tariff change marked (17), special termination marked (18), option change marked (20), IP based billing operations marked (22).</li>         <li>HLR request frequency: Too frequent HLR requests.</li> \r\n      </ul>\r\n      <br>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "ResetSimInHlr",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "ICCID value of the SIM",
+          "example" : 998296987749503,
+          "in" : "path",
+          "name" : "iccid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Reset SIM in HLR",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/{iccid}/session" : {
+      "get" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call retrieves the active session of a specific SIM card.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given ICCID.</li>\r\n         <li>SIM identifier: SIM(s) for given ICCID do not belong to the provided partner ID.</li>\r\n         <li>RefreshSession: Invalid refresh session value, must be a boolean.</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "getSimSession",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "ICCID value of the SIM",
+          "example" : 998296987749503,
+          "in" : "path",
+          "name" : "iccid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "To specify if the session is refreshable",
+          "example" : "refreshSession=true",
+          "in" : "query",
+          "name" : "refreshSession",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/GetSimSessionResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Get SIM Session",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/{iccid}/sessionhistory" : {
+      "get" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call retrieves the session history of a specific SIM card.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given ICCID.</li>\r\n         <li>SIM identifier: SIM(s) for given ICCID do not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n         <li>SIM status: SIM(s) are not in a valid state.</li>\r\n         <li>Page: Input invalid page number.</li>\r\n         <li>Page: Exceed the max allowed page number of 10000.</li>\r\n         <li>Size: Input invalid size number.</li>\r\n         <li>Size: Exceed the max allowed size number of 50.</li>\r\n         <li>Date: Invalid parameter names for a date time filter.</li>\r\n         <li>Date: dateTo is smaller than dateFrom.</li>\r\n         <li>Date: Incorrect date and time formats.</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "getSimSessionHistory",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "ICCID value of the SIM",
+          "example" : 998296987749503,
+          "in" : "path",
+          "name" : "iccid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "The number of the specific page of listed session history records to specific SIM. Max. up to 10000",
+          "example" : "page=1",
+          "in" : "query",
+          "name" : "page",
+          "required" : false,
+          "schema" : {
+            "minimum" : 1,
+            "type" : "integer",
+            "format" : "int64",
+            "default" : 1
+          }
+        }, {
+          "description" : "The amount per page of returned session history records to specific SIM. Max. up to 50",
+          "example" : "size=10",
+          "in" : "query",
+          "name" : "size",
+          "required" : false,
+          "schema" : {
+            "maximum" : 50,
+            "minimum" : 1,
+            "type" : "integer",
+            "format" : "int64",
+            "default" : 10
+          }
+        }, {
+          "description" : "The start date time for query. If no date is provided, the current date will be used. All timestamps must have a Z at the end to mark them as UTC. See below example",
+          "example" : "2022-07-14T00:00:00.000Z",
+          "in" : "query",
+          "name" : "dateFrom",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }, {
+          "description" : "The end date time for query. If no date is provided, the date one week ago will be used. All timestamps must have a Z at the end to mark them as UTC. See below example",
+          "example" : "2022-07-14T00:00:00.000Z",
+          "in" : "query",
+          "name" : "dateTo",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }, {
+          "in" : "query",
+          "name" : "timeSpan",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/TimeSpan"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/GetSimSessionHistoryResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Get SIM Session History",
+        "tags" : [ "sims" ]
+      }
+    },
+    "/v1/partners/{partnerId}/sims/{iccid}/sms" : {
+      "get" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>This call retrieves a list of the SMS history for a SIM card within a specific time period.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n         <li>SIM identifier: SIM(s) do not exist for given ICCID.</li>\r\n         <li>SIM identifier: SIM(s) for given ICCID do not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM(s) are currently being processed according to an earlier request (busy state).</li>\r\n         <li>SIM status: SIM(s) are not in a valid state.</li>\r\n         <li>Page: Input invalid page number.</li>\r\n         <li>Page: Exceed the max allowed page number of 10000.</li>\r\n         <li>Size: Input invalid size number.</li>\r\n         <li>Size: Exceed the max allowed size number of 50.</li>\r\n         <li>Date: Invalid parameter names for a date time filter.</li>\r\n         <li>Date: DateTo is smaller than dateFrom.</li>\r\n         <li>Date: Incorrect date and time formats.</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "getSmsHistory",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "ICCID value of the SIM",
+          "example" : 998296987749503,
+          "in" : "path",
+          "name" : "iccid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "The number of the specific page of listed SMS history records to specific SIM. Max. up to 10000",
+          "example" : "page=1",
+          "in" : "query",
+          "name" : "page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "default" : 1
+          }
+        }, {
+          "description" : "The amount per page of returned SMS history records to specific SIM. Max. up to 50",
+          "example" : "size=10",
+          "in" : "query",
+          "name" : "size",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "default" : 20
+          }
+        }, {
+          "description" : "The start date time for query. If no date is provided, the date one week ago will be used. All timestamps must have a Z at the end to mark them as UTC. See below example",
+          "example" : "2022-07-07T00:00:00.000Z",
+          "in" : "query",
+          "name" : "dateFrom",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }, {
+          "description" : "The end date time for query. If no date is provided, the current date will be used. All timestamps must have a Z at the end to mark them as UTC. See below example",
+          "example" : "2022-07-14T00:00:00.000Z",
+          "in" : "query",
+          "name" : "dateTo",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }, {
+          "in" : "query",
+          "name" : "timeSpan",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/TimeSpan"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/GetSmsHistoryResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Get SMS History",
+        "tags" : [ "sims" ]
+      },
+      "post" : {
+        "description" : "<!DOCTYPE html>\r\n<html>\r\n   <body>\r\n      <h2>Description</h2>\r\n      <b>Send a message to the SIM card identified by the ICCID.</b>\r\n      <br>\r\n      <br>\r\n      <h2>Possible validation errors</h2>\r\n      <ul>\r\n         <li>Service unavailable: Maintenance mode activated.</li>         <li>Request usage: Too Many Concurrent Requests on Platform.</li>\r\n         <li>Partner ID: Invalid partner ID.</li>\r\n         <li>Partner ID: User not authorized for this partner.</li>\r\n         <li>SIM identifier: SIM does not exist for given ICCID.</li>\r\n         <li>SIM identifier: SIM for given ICCID does not belong to the provided partner ID.</li>\r\n         <li>SIM status: SIM is not in correct state for sending messages. SIM status (techn.) must be productive (1); Logical SIM status must be test (4) or productive (5).</li>\r\n         <li>SIM function: SIM is restricted by a service function and cannot send messages.</li>\r\n         <li>SMS content: Message is too long.</li>\r\n      </ul>\r\n   </body>\r\n</html>\r\n",
+        "operationId" : "sendMessage",
+        "parameters" : [ {
+          "description" : "Partner ID of the customer",
+          "example" : 500379,
+          "in" : "path",
+          "name" : "partnerId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "ICCID value of the SIM",
+          "example" : 998296987749503,
+          "in" : "path",
+          "name" : "iccid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SendMessageParameter"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SignUpCreationResult"
+                }
+              }
+            },
+            "description" : "Successful response"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description" : "Validation error. Refer to the list in the description."
+          }
+        },
+        "summary" : "Send Message",
+        "tags" : [ "sims" ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "Action" : {
+        "type" : "object",
+        "properties" : {
+          "action" : {
+            "type" : "object",
+            "properties" : {
+              "actionType" : {
+                "type" : "string"
+              },
+              "creationDate" : {
+                "type" : "string",
+                "format" : "date-time"
+              },
+              "creator" : {
+                "type" : "string"
+              },
+              "links" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Link"
+                }
+              },
+              "source" : {
+                "type" : "string"
+              },
+              "status" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      },
+      "ActionStatus" : {
+        "type" : "object",
+        "properties" : {
+          "actionStatus" : {
+            "type" : "object",
+            "properties" : {
+              "affectedSims" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/IccidWrapper"
+                }
+              },
+              "createTime" : {
+                "type" : "string"
+              },
+              "creator" : {
+                "type" : "string"
+              },
+              "links" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Link"
+                }
+              },
+              "originalRequest" : {
+                "type" : "string"
+              },
+              "status" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      },
+      "AllocatedCustomer" : {
+        "type" : "object",
+        "properties" : {
+          "allocatedCustomer" : {
+            "required" : [ "companyName", "partnerId" ],
+            "type" : "object",
+            "properties" : {
+              "companyName" : {
+                "type" : "string"
+              },
+              "isSubunitOf" : {
+                "type" : "string"
+              },
+              "links" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Link"
+                }
+              },
+              "partnerId" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      },
+      "ApiError" : {
+        "type" : "object",
+        "properties" : {
+          "errors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string",
+            "enum" : [ "100 CONTINUE", "101 SWITCHING_PROTOCOLS", "102 PROCESSING", "103 CHECKPOINT", "200 OK", "201 CREATED", "202 ACCEPTED", "203 NON_AUTHORITATIVE_INFORMATION", "204 NO_CONTENT", "205 RESET_CONTENT", "206 PARTIAL_CONTENT", "207 MULTI_STATUS", "208 ALREADY_REPORTED", "226 IM_USED", "300 MULTIPLE_CHOICES", "301 MOVED_PERMANENTLY", "302 FOUND", "302 MOVED_TEMPORARILY", "303 SEE_OTHER", "304 NOT_MODIFIED", "305 USE_PROXY", "307 TEMPORARY_REDIRECT", "308 PERMANENT_REDIRECT", "400 BAD_REQUEST", "401 UNAUTHORIZED", "402 PAYMENT_REQUIRED", "403 FORBIDDEN", "404 NOT_FOUND", "405 METHOD_NOT_ALLOWED", "406 NOT_ACCEPTABLE", "407 PROXY_AUTHENTICATION_REQUIRED", "408 REQUEST_TIMEOUT", "409 CONFLICT", "410 GONE", "411 LENGTH_REQUIRED", "412 PRECONDITION_FAILED", "413 PAYLOAD_TOO_LARGE", "413 REQUEST_ENTITY_TOO_LARGE", "414 URI_TOO_LONG", "414 REQUEST_URI_TOO_LONG", "415 UNSUPPORTED_MEDIA_TYPE", "416 REQUESTED_RANGE_NOT_SATISFIABLE", "417 EXPECTATION_FAILED", "418 I_AM_A_TEAPOT", "419 INSUFFICIENT_SPACE_ON_RESOURCE", "420 METHOD_FAILURE", "421 DESTINATION_LOCKED", "422 UNPROCESSABLE_ENTITY", "423 LOCKED", "424 FAILED_DEPENDENCY", "425 TOO_EARLY", "426 UPGRADE_REQUIRED", "428 PRECONDITION_REQUIRED", "429 TOO_MANY_REQUESTS", "431 REQUEST_HEADER_FIELDS_TOO_LARGE", "451 UNAVAILABLE_FOR_LEGAL_REASONS", "500 INTERNAL_SERVER_ERROR", "501 NOT_IMPLEMENTED", "502 BAD_GATEWAY", "503 SERVICE_UNAVAILABLE", "504 GATEWAY_TIMEOUT", "505 HTTP_VERSION_NOT_SUPPORTED", "506 VARIANT_ALSO_NEGOTIATES", "507 INSUFFICIENT_STORAGE", "508 LOOP_DETECTED", "509 BANDWIDTH_LIMIT_EXCEEDED", "510 NOT_EXTENDED", "511 NETWORK_AUTHENTICATION_REQUIRED" ]
+          },
+          "timestamp" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CriticalSims" : {
+        "type" : "object",
+        "properties" : {
+          "blockedAutomatically" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "blockedManually" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "suspended" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "undefined" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "EuiccidWrapper" : {
+        "type" : "object",
+        "properties" : {
+          "euiccid" : {
+            "type" : "string"
+          }
+        }
+      },
+      "FraudState" : {
+        "type" : "object",
+        "properties" : {
+          "alarm" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "noFraudProfile" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "ok" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "GetActionListResultParameters" : {
+        "type" : "object",
+        "properties" : {
+          "actionListResult" : {
+            "required" : [ "actions", "pageInfo" ],
+            "type" : "object",
+            "properties" : {
+              "actions" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Action"
+                }
+              },
+              "links" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Link"
+                }
+              },
+              "pageInfo" : {
+                "$ref" : "#/components/schemas/PageInfo"
+              }
+            }
+          }
+        }
+      },
+      "GetCurrentPoolUsageResult" : {
+        "type" : "object",
+        "properties" : {
+          "poolUsageResult" : {
+            "type" : "object",
+            "properties" : {
+              "links" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Link"
+                }
+              },
+              "message" : {
+                "type" : "string"
+              },
+              "poolUsageList" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/PoolUsageEntry"
+                }
+              }
+            }
+          }
+        }
+      },
+      "GetCustomersResultParameters" : {
+        "type" : "object",
+        "properties" : {
+          "User" : {
+            "required" : [ "allocatedCustomerList", "email", "firstName", "lastName", "login", "userName" ],
+            "type" : "object",
+            "properties" : {
+              "allocatedCustomerList" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/AllocatedCustomer"
+                }
+              },
+              "email" : {
+                "type" : "string"
+              },
+              "firstName" : {
+                "type" : "string"
+              },
+              "lastName" : {
+                "type" : "string"
+              },
+              "links" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Link"
+                }
+              },
+              "login" : {
+                "type" : "string"
+              },
+              "userName" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      },
+      "GetSimApiUsageResult" : {
+        "type" : "object",
+        "properties" : {
+          "SimApiUsage" : {
+            "type" : "object",
+            "properties" : {
+              "count" : {
+                "type" : "integer",
+                "format" : "int64"
+              }
+            }
+          }
+        }
+      },
+      "GetSimDetailsResult" : {
+        "type" : "object",
+        "properties" : {
+          "SimDetails" : {
+            "type" : "object",
+            "properties" : {
+              "accessProfile" : {
+                "type" : "string"
+              },
+              "barringProfile" : {
+                "type" : "string"
+              },
+              "bookedOptions" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/SimOption"
+                }
+              },
+              "busyState" : {
+                "type" : "string"
+              },
+              "costLimitProfile" : {
+                "type" : "string"
+              },
+              "euiccid" : {
+                "type" : "string"
+              },
+              "externalOfferingId" : {
+                "type" : "string"
+              },
+              "field1" : {
+                "type" : "string"
+              },
+              "field10" : {
+                "type" : "string"
+              },
+              "field2" : {
+                "type" : "string"
+              },
+              "field3" : {
+                "type" : "string"
+              },
+              "field4" : {
+                "type" : "string"
+              },
+              "field5" : {
+                "type" : "string"
+              },
+              "field6" : {
+                "type" : "string"
+              },
+              "field7" : {
+                "type" : "string"
+              },
+              "field8" : {
+                "type" : "string"
+              },
+              "field9" : {
+                "type" : "string"
+              },
+              "fraudProfile" : {
+                "type" : "string"
+              },
+              "fraudStatus" : {
+                "type" : "string"
+              },
+              "iccid" : {
+                "type" : "string"
+              },
+              "imsi" : {
+                "type" : "string"
+              },
+              "ipAddressConfig" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/IpAddressConfig"
+                }
+              },
+              "limitProfile" : {
+                "type" : "string"
+              },
+              "limitStatus" : {
+                "type" : "string"
+              },
+              "links" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Link"
+                }
+              },
+              "msisdn" : {
+                "type" : "string"
+              },
+              "offering" : {
+                "type" : "string"
+              },
+              "restrictionStatus" : {
+                "type" : "string"
+              },
+              "smsrid" : {
+                "type" : "string"
+              },
+              "status" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      },
+      "GetSimListResultParameters" : {
+        "type" : "object",
+        "properties" : {
+          "simListResult" : {
+            "required" : [ "pageInfo", "sims" ],
+            "type" : "object",
+            "properties" : {
+              "links" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Link"
+                }
+              },
+              "pageInfo" : {
+                "$ref" : "#/components/schemas/PageInfo"
+              },
+              "sims" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Sim"
+                }
+              }
+            }
+          }
+        }
+      },
+      "GetSimSessionHistoryResult" : {
+        "type" : "object",
+        "properties" : {
+          "SimSessionHistoryResult" : {
+            "required" : [ "pageInfo", "simSessionHistoryDetails" ],
+            "type" : "object",
+            "properties" : {
+              "links" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Link"
+                }
+              },
+              "pageInfo" : {
+                "$ref" : "#/components/schemas/PageInfo"
+              },
+              "simSessionHistoryDetails" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/SimSessionHistoryDetail"
+                }
+              }
+            }
+          }
+        }
+      },
+      "GetSimSessionResult" : {
+        "type" : "object",
+        "properties" : {
+          "SimSessionResult" : {
+            "required" : [ "iccid" ],
+            "type" : "object",
+            "properties" : {
+              "apnAddress" : {
+                "type" : "string"
+              },
+              "country" : {
+                "type" : "string"
+              },
+              "duration" : {
+                "type" : "integer",
+                "format" : "int64"
+              },
+              "iccid" : {
+                "type" : "string"
+              },
+              "imei" : {
+                "type" : "string"
+              },
+              "ipAddress" : {
+                "type" : "string"
+              },
+              "ipv6AddressPrefix" : {
+                "type" : "string"
+              },
+              "lastUpdateTime" : {
+                "type" : "string"
+              },
+              "links" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Link"
+                }
+              },
+              "mcc" : {
+                "type" : "string"
+              },
+              "mnc" : {
+                "type" : "string"
+              },
+              "pdpType" : {
+                "type" : "string"
+              },
+              "ratType" : {
+                "type" : "string"
+              },
+              "restrictionReason" : {
+                "type" : "string"
+              },
+              "volumeOverall" : {
+                "type" : "integer",
+                "format" : "int64"
+              }
+            }
+          }
+        }
+      },
+      "GetSimStatesResult" : {
+        "type" : "object",
+        "properties" : {
+          "simStates" : {
+            "type" : "object",
+            "properties" : {
+              "criticalSims" : {
+                "$ref" : "#/components/schemas/CriticalSims"
+              },
+              "fraudState" : {
+                "$ref" : "#/components/schemas/FraudState"
+              },
+              "limitState" : {
+                "$ref" : "#/components/schemas/LimitState"
+              },
+              "links" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Link"
+                }
+              },
+              "simState" : {
+                "$ref" : "#/components/schemas/SimState"
+              }
+            }
+          }
+        }
+      },
+      "GetSimTransferDetailResult" : {
+        "required" : [ "pageInfo" ],
+        "type" : "object",
+        "properties" : {
+          "completionDate" : {
+            "type" : "string"
+          },
+          "error" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "links" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Link"
+            }
+          },
+          "notePartnerA" : {
+            "type" : "string"
+          },
+          "notePartnerB" : {
+            "type" : "string"
+          },
+          "pageInfo" : {
+            "$ref" : "#/components/schemas/PageInfo"
+          },
+          "partnerA" : {
+            "type" : "string"
+          },
+          "partnerB" : {
+            "type" : "string"
+          },
+          "selectedFields" : {
+            "$ref" : "#/components/schemas/SelectedFields"
+          },
+          "simTransfer" : {
+            "$ref" : "#/components/schemas/SimTransfer"
+          },
+          "startDate" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string"
+          }
+        }
+      },
+      "GetSimTransferListResult" : {
+        "required" : [ "simTransferList" ],
+        "type" : "object",
+        "properties" : {
+          "info" : {
+            "$ref" : "#/components/schemas/PageInfo"
+          },
+          "links" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Link"
+            }
+          },
+          "simTransferList" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SimTransferListEntry"
+            }
+          }
+        }
+      },
+      "GetSmsHistoryResult" : {
+        "type" : "object",
+        "properties" : {
+          "SmsHistoryResult" : {
+            "required" : [ "pageinfo", "smsHistoryData" ],
+            "type" : "object",
+            "properties" : {
+              "links" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Link"
+                }
+              },
+              "pageinfo" : {
+                "$ref" : "#/components/schemas/PageInfo"
+              },
+              "smsHistoryData" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/SmsHistoryData"
+                }
+              }
+            }
+          }
+        }
+      },
+      "IccidWrapper" : {
+        "type" : "object",
+        "properties" : {
+          "iccid" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ImsiWrapper" : {
+        "type" : "object",
+        "properties" : {
+          "imsi" : {
+            "type" : "string"
+          }
+        }
+      },
+      "IpAddress" : {
+        "type" : "object",
+        "properties" : {
+          "ipAddress" : {
+            "type" : "string"
+          },
+          "ipAddressType" : {
+            "type" : "string"
+          }
+        }
+      },
+      "IpAddressConfig" : {
+        "type" : "object",
+        "properties" : {
+          "apnName" : {
+            "type" : "string"
+          },
+          "ipAddresses" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IpAddress"
+            }
+          }
+        }
+      },
+      "LimitState" : {
+        "type" : "object",
+        "properties" : {
+          "alarm" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "noLimitProfile" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "ok" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "suspended" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "warning" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "Link" : {
+        "type" : "object",
+        "properties" : {
+          "deprecation" : {
+            "type" : "string"
+          },
+          "href" : {
+            "type" : "string"
+          },
+          "hreflang" : {
+            "type" : "string"
+          },
+          "media" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "profile" : {
+            "type" : "string"
+          },
+          "rel" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string"
+          }
+        }
+      },
+      "MultipleSignUpCreationResult" : {
+        "required" : [ "signupIds", "successMessage" ],
+        "type" : "object",
+        "properties" : {
+          "links" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Link"
+            }
+          },
+          "signupIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          },
+          "successMessage" : {
+            "type" : "string"
+          }
+        }
+      },
+      "PageInfo" : {
+        "required" : [ "currentPage", "nrOfPages", "overallAmount", "pageSize" ],
+        "type" : "object",
+        "properties" : {
+          "currentPage" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "nrOfPages" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "overallAmount" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "pageSize" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "PoolUsageEntry" : {
+        "type" : "object",
+        "properties" : {
+          "poolUsage" : {
+            "type" : "object",
+            "properties" : {
+              "monitoringPeriod" : {
+                "type" : "integer",
+                "format" : "int64"
+              },
+              "offering" : {
+                "type" : "string"
+              },
+              "offeringId" : {
+                "type" : "integer",
+                "format" : "int64"
+              },
+              "periodEndDate" : {
+                "type" : "string"
+              },
+              "periodStartDate" : {
+                "type" : "string"
+              },
+              "poolName" : {
+                "type" : "string"
+              },
+              "volumeConsumed" : {
+                "type" : "number"
+              },
+              "volumeInPool" : {
+                "type" : "number"
+              }
+            }
+          }
+        }
+      },
+      "ProfileDataParameters" : {
+        "type" : "object",
+        "properties" : {
+          "accessProfileId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "barringProfileId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "costLimitProfileId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "fraudProfileId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "limitProfileId" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "ProfileStringParameters" : {
+        "type" : "object",
+        "properties" : {
+          "accessProfileId" : {
+            "type" : "string"
+          },
+          "barringProfileId" : {
+            "type" : "string"
+          },
+          "costLimitProfileId" : {
+            "type" : "string"
+          },
+          "fraudProfileId" : {
+            "type" : "string"
+          },
+          "limitProfileId" : {
+            "type" : "string"
+          }
+        }
+      },
+      "RootResource" : {
+        "type" : "object",
+        "properties" : {
+          "Root" : {
+            "type" : "object",
+            "properties" : {
+              "info" : {
+                "type" : "string"
+              },
+              "links" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Link"
+                }
+              }
+            }
+          }
+        }
+      },
+      "SelectedFields" : {
+        "type" : "object",
+        "properties" : {
+          "field1" : {
+            "type" : "string"
+          },
+          "field10" : {
+            "type" : "string"
+          },
+          "field2" : {
+            "type" : "string"
+          },
+          "field3" : {
+            "type" : "string"
+          },
+          "field4" : {
+            "type" : "string"
+          },
+          "field5" : {
+            "type" : "string"
+          },
+          "field6" : {
+            "type" : "string"
+          },
+          "field7" : {
+            "type" : "string"
+          },
+          "field8" : {
+            "type" : "string"
+          },
+          "field9" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SendMessageParameter" : {
+        "required" : [ "message" ],
+        "type" : "object",
+        "properties" : {
+          "message" : {
+            "type" : "string",
+            "description" : "Content of the SMS",
+            "example" : "Hello. This is a test SMS."
+          }
+        }
+      },
+      "ShippingAddress" : {
+        "required" : [ "city", "companyName", "country", "firstName", "houseNumber", "lastName", "postalCode", "salutation", "street" ],
+        "type" : "object",
+        "properties" : {
+          "additionToAddress1" : {
+            "type" : "string",
+            "description" : "Max allowed length of additional address 1 value is 35",
+            "example" : "Ally 160"
+          },
+          "additionToAddress2" : {
+            "type" : "string",
+            "description" : "Max allowed length of additional address 2 value is 35",
+            "example" : "Lane 3"
+          },
+          "additionalInformation" : {
+            "type" : "string",
+            "description" : "Max allowed length of additional information value is 35",
+            "example" : "thanks"
+          },
+          "attention" : {
+            "type" : "string",
+            "description" : "Max allowed length of attention value is 100",
+            "example" : "John Dao"
+          },
+          "city" : {
+            "type" : "string",
+            "description" : "Max allowed length of city value is 25",
+            "example" : "Taipei"
+          },
+          "companyName" : {
+            "type" : "string",
+            "description" : "Max allowed length of company name vale is 255",
+            "example" : "XZeus"
+          },
+          "country" : {
+            "type" : "string",
+            "description" : "Max allowed length of country value is 100",
+            "example" : "Taiwan"
+          },
+          "firstName" : {
+            "type" : "string",
+            "description" : "Max allowed length of first name value is 40",
+            "example" : "John"
+          },
+          "houseNumber" : {
+            "type" : "string",
+            "description" : "Max allowed length of house number value is 10",
+            "example" : "5978"
+          },
+          "lastName" : {
+            "type" : "string",
+            "description" : "Max allowed length of last name value is 40",
+            "example" : "Dao"
+          },
+          "postalCode" : {
+            "type" : "string",
+            "description" : "Max allowed length of postal code value is 10",
+            "example" : "987"
+          },
+          "salutation" : {
+            "type" : "string",
+            "description" : "Salutation for the receiver. Valid salutation: Mr., Mrs., Company",
+            "example" : "Mr."
+          },
+          "street" : {
+            "type" : "string",
+            "description" : "Max allowed length of street value is 100",
+            "example" : "FuXing"
+          }
+        },
+        "description" : "A address to ship the ordered SIMs"
+      },
+      "SignUpCreationResult" : {
+        "required" : [ "signupId", "successMessage" ],
+        "type" : "object",
+        "properties" : {
+          "links" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Link"
+            }
+          },
+          "signupId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "successMessage" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Sim" : {
+        "type" : "object",
+        "properties" : {
+          "sim" : {
+            "required" : [ "iccid" ],
+            "type" : "object",
+            "properties" : {
+              "field1" : {
+                "type" : "string"
+              },
+              "field10" : {
+                "type" : "string"
+              },
+              "field2" : {
+                "type" : "string"
+              },
+              "field3" : {
+                "type" : "string"
+              },
+              "field4" : {
+                "type" : "string"
+              },
+              "field5" : {
+                "type" : "string"
+              },
+              "field6" : {
+                "type" : "string"
+              },
+              "field7" : {
+                "type" : "string"
+              },
+              "field8" : {
+                "type" : "string"
+              },
+              "field9" : {
+                "type" : "string"
+              },
+              "iccid" : {
+                "type" : "string"
+              },
+              "imei" : {
+                "type" : "string"
+              },
+              "imsi" : {
+                "type" : "string"
+              },
+              "ipAddressConfig" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/IpAddressConfig"
+                }
+              },
+              "links" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Link"
+                }
+              },
+              "msisdn" : {
+                "type" : "string"
+              },
+              "simAggregatedData" : {
+                "$ref" : "#/components/schemas/SimAggregateData"
+              },
+              "status" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      },
+      "SimActivationEUICCID" : {
+        "type" : "object",
+        "properties" : {
+          "euiccid" : {
+            "type" : "string"
+          },
+          "field1" : {
+            "type" : "string"
+          },
+          "field10" : {
+            "type" : "string"
+          },
+          "field2" : {
+            "type" : "string"
+          },
+          "field3" : {
+            "type" : "string"
+          },
+          "field4" : {
+            "type" : "string"
+          },
+          "field5" : {
+            "type" : "string"
+          },
+          "field6" : {
+            "type" : "string"
+          },
+          "field7" : {
+            "type" : "string"
+          },
+          "field8" : {
+            "type" : "string"
+          },
+          "field9" : {
+            "type" : "string"
+          },
+          "staticIpsPerApnList" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/StaticIpsPerApnParameter"
+            }
+          }
+        }
+      },
+      "SimActivationICCID" : {
+        "type" : "object",
+        "properties" : {
+          "field1" : {
+            "type" : "string"
+          },
+          "field10" : {
+            "type" : "string"
+          },
+          "field2" : {
+            "type" : "string"
+          },
+          "field3" : {
+            "type" : "string"
+          },
+          "field4" : {
+            "type" : "string"
+          },
+          "field5" : {
+            "type" : "string"
+          },
+          "field6" : {
+            "type" : "string"
+          },
+          "field7" : {
+            "type" : "string"
+          },
+          "field8" : {
+            "type" : "string"
+          },
+          "field9" : {
+            "type" : "string"
+          },
+          "iccid" : {
+            "type" : "string"
+          },
+          "staticIpsPerApnList" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/StaticIpsPerApnParameter"
+            }
+          }
+        }
+      },
+      "SimActivationIMSI" : {
+        "type" : "object",
+        "properties" : {
+          "field1" : {
+            "type" : "string"
+          },
+          "field10" : {
+            "type" : "string"
+          },
+          "field2" : {
+            "type" : "string"
+          },
+          "field3" : {
+            "type" : "string"
+          },
+          "field4" : {
+            "type" : "string"
+          },
+          "field5" : {
+            "type" : "string"
+          },
+          "field6" : {
+            "type" : "string"
+          },
+          "field7" : {
+            "type" : "string"
+          },
+          "field8" : {
+            "type" : "string"
+          },
+          "field9" : {
+            "type" : "string"
+          },
+          "imsi" : {
+            "type" : "string"
+          },
+          "staticIpsPerApnList" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/StaticIpsPerApnParameter"
+            }
+          }
+        }
+      },
+      "SimActivationParameters" : {
+        "type" : "object",
+        "properties" : {
+          "activationTemplateId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "euiccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SimActivationEUICCID"
+            }
+          },
+          "iccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SimActivationICCID"
+            }
+          },
+          "imsiParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SimActivationIMSI"
+            }
+          },
+          "offeringId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "optionIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          },
+          "profileDataParameters" : {
+            "$ref" : "#/components/schemas/ProfileDataParameters"
+          },
+          "startDtRequested" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "useTestTariff" : {
+            "type" : "boolean"
+          }
+        },
+        "description" : "There are several mandatory attributes including activationTemplateId, offeringId, optionIds, startDtRequested, useTestTariff and SIM(ICCID/IMSI/EUICCID) parameter.\r\nAll timestamps must have a Z at the end to mark them as UTC. e.g. 2022-07-14T00:00:00.000Z"
+      },
+      "SimAggregateData" : {
+        "required" : [ "consumption" ],
+        "type" : "object",
+        "properties" : {
+          "consumption" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "unit" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SimBlockParameter" : {
+        "type" : "object",
+        "properties" : {
+          "euiccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EuiccidWrapper"
+            }
+          },
+          "iccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IccidWrapper"
+            }
+          },
+          "imsiParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ImsiWrapper"
+            }
+          }
+        },
+        "description" : "SIM identifier can be ICCID, IMSI or EUICCID. Only one type of identifier allowed per request."
+      },
+      "SimCancelParameter" : {
+        "required" : [ "status" ],
+        "type" : "object",
+        "properties" : {
+          "status" : {
+            "pattern" : "^cancelled$",
+            "type" : "string"
+          }
+        },
+        "description" : "Request model has only one attribute which accepts only 'cancelled' "
+      },
+      "SimChangeTariffParameter" : {
+        "required" : [ "offeringId" ],
+        "type" : "object",
+        "properties" : {
+          "euiccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EuiccidWrapper"
+            }
+          },
+          "iccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IccidWrapper"
+            }
+          },
+          "imsiParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ImsiWrapper"
+            }
+          },
+          "offeringId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "optionIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          },
+          "startDtRequested" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        },
+        "description" : "SIM identifier can be ICCID, IMSI or EUICCID. Only one type of identifier allowed per request.\r\nBesides SIM identifier, value for mandatory attribute offeringId must be given.\r\nAll timestamps must have a Z at the end to mark them as UTC. e.g. 2022-07-14T00:00:00.000Z"
+      },
+      "SimEnterPrdouctiveStateParameter" : {
+        "type" : "object",
+        "properties" : {
+          "euiccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EuiccidWrapper"
+            }
+          },
+          "iccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IccidWrapper"
+            }
+          },
+          "imsiParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ImsiWrapper"
+            }
+          }
+        },
+        "description" : "SIM identifier can be ICCID, IMSI or EUICCID. Only one type of identifier allowed per request."
+      },
+      "SimModifyProfilesParameters" : {
+        "required" : [ "profileParameters" ],
+        "type" : "object",
+        "properties" : {
+          "euiccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EuiccidWrapper"
+            }
+          },
+          "iccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IccidWrapper"
+            }
+          },
+          "imsiParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ImsiWrapper"
+            }
+          },
+          "profileDataParameters" : {
+            "$ref" : "#/components/schemas/ProfileDataParameters"
+          },
+          "profileParameters" : {
+            "$ref" : "#/components/schemas/ProfileStringParameters"
+          },
+          "profileStringSelector" : {
+            "$ref" : "#/components/schemas/ProfileStringParameters"
+          }
+        },
+        "description" : "SIM identifier can be ICCID, IMSI or EUICCID. Only one type of identifier allowed per request.\r\nProfileStringParameters is a mandatory object in the request body."
+      },
+      "SimModifyRemarksEUICCID" : {
+        "type" : "object",
+        "properties" : {
+          "euiccid" : {
+            "type" : "string"
+          },
+          "field1" : {
+            "type" : "string"
+          },
+          "field10" : {
+            "type" : "string"
+          },
+          "field2" : {
+            "type" : "string"
+          },
+          "field3" : {
+            "type" : "string"
+          },
+          "field4" : {
+            "type" : "string"
+          },
+          "field5" : {
+            "type" : "string"
+          },
+          "field6" : {
+            "type" : "string"
+          },
+          "field7" : {
+            "type" : "string"
+          },
+          "field8" : {
+            "type" : "string"
+          },
+          "field9" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SimModifyRemarksICCID" : {
+        "type" : "object",
+        "properties" : {
+          "field1" : {
+            "type" : "string"
+          },
+          "field10" : {
+            "type" : "string"
+          },
+          "field2" : {
+            "type" : "string"
+          },
+          "field3" : {
+            "type" : "string"
+          },
+          "field4" : {
+            "type" : "string"
+          },
+          "field5" : {
+            "type" : "string"
+          },
+          "field6" : {
+            "type" : "string"
+          },
+          "field7" : {
+            "type" : "string"
+          },
+          "field8" : {
+            "type" : "string"
+          },
+          "field9" : {
+            "type" : "string"
+          },
+          "iccid" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SimModifyRemarksIMSI" : {
+        "type" : "object",
+        "properties" : {
+          "field1" : {
+            "type" : "string"
+          },
+          "field10" : {
+            "type" : "string"
+          },
+          "field2" : {
+            "type" : "string"
+          },
+          "field3" : {
+            "type" : "string"
+          },
+          "field4" : {
+            "type" : "string"
+          },
+          "field5" : {
+            "type" : "string"
+          },
+          "field6" : {
+            "type" : "string"
+          },
+          "field7" : {
+            "type" : "string"
+          },
+          "field8" : {
+            "type" : "string"
+          },
+          "field9" : {
+            "type" : "string"
+          },
+          "imsi" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SimModifyRemarksParameters" : {
+        "type" : "object",
+        "properties" : {
+          "euiccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SimModifyRemarksEUICCID"
+            }
+          },
+          "iccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SimModifyRemarksICCID"
+            }
+          },
+          "imsiParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SimModifyRemarksIMSI"
+            }
+          }
+        },
+        "description" : "SIM identifier can be ICCID, IMSI or EUICCID. Only one type of identifier allowed per request.\r\nField 1-10 is optional for the target SIM(s)."
+      },
+      "SimMoveParameters" : {
+        "required" : [ "recipient" ],
+        "type" : "object",
+        "properties" : {
+          "euiccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EuiccidWrapper"
+            }
+          },
+          "iccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IccidWrapper"
+            }
+          },
+          "imsiParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ImsiWrapper"
+            }
+          },
+          "recipient" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        },
+        "description" : "SIM identifier can be ICCID, IMSI or EUICCID. Only one type of identifier allowed per request.\r\n Apart from SIM identifier, recipient is also a mandatory attribute in the body."
+      },
+      "SimOption" : {
+        "type" : "object",
+        "properties" : {
+          "customerOffering" : {
+            "type" : "string"
+          },
+          "externalOfferingId" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "SimOrderParameter" : {
+        "required" : [ "numberOfSims", "shippingAddress", "simType", "startDtRequested" ],
+        "type" : "object",
+        "properties" : {
+          "note" : {
+            "type" : "string",
+            "description" : "Max allowed length of note vale is 4000",
+            "example" : "Please send to 2nd floor directly"
+          },
+          "notificationEmailAddress" : {
+            "type" : "string",
+            "description" : "Max allowed length of notification email address vale is 100",
+            "example" : "john.dao@xzeus.com"
+          },
+          "numberOfSims" : {
+            "type" : "integer",
+            "description" : "A number of SIM card(s) to be ordered",
+            "format" : "int64",
+            "example" : 10
+          },
+          "shippingAddress" : {
+            "$ref" : "#/components/schemas/ShippingAddress"
+          },
+          "simType" : {
+            "type" : "string",
+            "description" : "Max allowed length of sim type vale is 100",
+            "example" : "canuseeme"
+          },
+          "startDtRequested" : {
+            "type" : "string",
+            "description" : "A date of the requested start date",
+            "format" : "date-time"
+          }
+        },
+        "description" : "There are several mandatory attributes including simType, numberOfSims, startDtRequested.\r\nShippingAddress is a mandatory object in the request body. Several attributes in object shippingAddress including companyName, firstName, lastName, salutation, street, houseNumber, postalCode, city, country.\r\n* please note: If a preactivated SIM type is provided, an offering attribute MUST be also included."
+      },
+      "SimOverrideLimitStatusParameters" : {
+        "type" : "object",
+        "properties" : {
+          "euiccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EuiccidWrapper"
+            }
+          },
+          "iccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IccidWrapper"
+            }
+          },
+          "imsiParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ImsiWrapper"
+            }
+          }
+        },
+        "description" : "SIM identifier can be ICCID, IMSI or EUICCID. Only one type of identifier allowed per request."
+      },
+      "SimResetFraudStatusParameters" : {
+        "type" : "object",
+        "properties" : {
+          "euiccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EuiccidWrapper"
+            }
+          },
+          "iccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IccidWrapper"
+            }
+          },
+          "imsiParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ImsiWrapper"
+            }
+          }
+        },
+        "description" : "SIM identifier can be ICCID, IMSI or EUICCID. Only one type of identifier allowed per request."
+      },
+      "SimResetLimitStatusParameters" : {
+        "type" : "object",
+        "properties" : {
+          "euiccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EuiccidWrapper"
+            }
+          },
+          "iccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IccidWrapper"
+            }
+          },
+          "imsiParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ImsiWrapper"
+            }
+          }
+        },
+        "description" : "SIM identifier can be ICCID, IMSI or EUICCID. Only one type of identifier allowed per request."
+      },
+      "SimRestoreLimitStatusParameters" : {
+        "type" : "object",
+        "properties" : {
+          "euiccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EuiccidWrapper"
+            }
+          },
+          "iccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IccidWrapper"
+            }
+          },
+          "imsiParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ImsiWrapper"
+            }
+          }
+        },
+        "description" : "SIM identifier can be ICCID, IMSI or EUICCID. Only one type of identifier allowed per request."
+      },
+      "SimRestrictParameter" : {
+        "type" : "object",
+        "properties" : {
+          "euiccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EuiccidWrapper"
+            }
+          },
+          "iccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IccidWrapper"
+            }
+          },
+          "imsiParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ImsiWrapper"
+            }
+          }
+        },
+        "description" : "SIM identifier can be ICCID, IMSI or EUICCID. Only one type of identifier allowed per request."
+      },
+      "SimSessionHistoryDetail" : {
+        "required" : [ "iccid", "startTime" ],
+        "type" : "object",
+        "properties" : {
+          "abortReason" : {
+            "type" : "string"
+          },
+          "apnAddress" : {
+            "type" : "string"
+          },
+          "country" : {
+            "type" : "string"
+          },
+          "duration" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "iccid" : {
+            "type" : "string"
+          },
+          "imei" : {
+            "type" : "string"
+          },
+          "ipv4Address" : {
+            "type" : "string"
+          },
+          "ipv6AddressPrefix" : {
+            "type" : "string"
+          },
+          "links" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Link"
+            }
+          },
+          "mcc" : {
+            "type" : "string"
+          },
+          "mnc" : {
+            "type" : "string"
+          },
+          "network" : {
+            "type" : "string"
+          },
+          "pdpType" : {
+            "type" : "string"
+          },
+          "ratType" : {
+            "type" : "string"
+          },
+          "rejectReason" : {
+            "type" : "string"
+          },
+          "restrictionReason" : {
+            "type" : "string"
+          },
+          "startTime" : {
+            "type" : "string"
+          },
+          "stopTime" : {
+            "type" : "string"
+          },
+          "volumeDownload" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "volumeOverall" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "volumeOverallRounded" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "volumeUpload" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "SimState" : {
+        "type" : "object",
+        "properties" : {
+          "activated" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "delivered" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "others" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "terminated" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalSims" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "SimSuspendParameters" : {
+        "type" : "object",
+        "properties" : {
+          "euiccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EuiccidWrapper"
+            }
+          },
+          "iccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IccidWrapper"
+            }
+          },
+          "imsiParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ImsiWrapper"
+            }
+          }
+        },
+        "description" : "SIM identifier can be ICCID, IMSI or EUICCID. Only one type of identifier allowed per request."
+      },
+      "SimTerminationParameters" : {
+        "type" : "object",
+        "properties" : {
+          "euiccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EuiccidWrapper"
+            }
+          },
+          "iccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IccidWrapper"
+            }
+          },
+          "imsiParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ImsiWrapper"
+            }
+          },
+          "specialTermination" : {
+            "type" : "boolean"
+          }
+        },
+        "description" : "SIM identifier can be ICCID, IMSI or EUICCID. Only one type of identifier allowed per request.\r\nBesides SIM identifier, attribute specialTermination is also mandatory and has default value 'false'. Set to 'true' if special termination is required."
+      },
+      "SimTransfer" : {
+        "type" : "object",
+        "properties" : {
+          "amountError" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "amountOverall" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "amountStillPending" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "amountSuccess" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "sims" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Sim"
+            }
+          }
+        }
+      },
+      "SimTransferCreationParameters" : {
+        "required" : [ "recipient" ],
+        "type" : "object",
+        "properties" : {
+          "euiccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EuiccidWrapper"
+            }
+          },
+          "iccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IccidWrapper"
+            }
+          },
+          "imsiParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ImsiWrapper"
+            }
+          },
+          "notePartnerA" : {
+            "type" : "string"
+          },
+          "recipient" : {
+            "type" : "string"
+          },
+          "transferRemark01" : {
+            "type" : "boolean",
+            "description" : "default: false"
+          },
+          "transferRemark02" : {
+            "type" : "boolean",
+            "description" : "default: false"
+          },
+          "transferRemark03" : {
+            "type" : "boolean",
+            "description" : "default: false"
+          },
+          "transferRemark04" : {
+            "type" : "boolean",
+            "description" : "default: false"
+          },
+          "transferRemark05" : {
+            "type" : "boolean",
+            "description" : "default: false"
+          },
+          "transferRemark06" : {
+            "type" : "boolean",
+            "description" : "default: false"
+          },
+          "transferRemark07" : {
+            "type" : "boolean",
+            "description" : "default: false"
+          },
+          "transferRemark08" : {
+            "type" : "boolean",
+            "description" : "default: false"
+          },
+          "transferRemark09" : {
+            "type" : "boolean",
+            "description" : "default: false"
+          },
+          "transferRemark10" : {
+            "type" : "boolean",
+            "description" : "default: false"
+          }
+        },
+        "description" : "SIM identifier can be ICCID, IMSI. EUICCID. Only one type of identifier allowed per request.\r\n Apart from SIM identifier, recipient is also a mandatory attribute in the body."
+      },
+      "SimTransferCreationResult" : {
+        "required" : [ "successMessage", "transactionId" ],
+        "type" : "object",
+        "properties" : {
+          "links" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Link"
+            }
+          },
+          "successMessage" : {
+            "type" : "string"
+          },
+          "transactionId" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "SimTransferListEntry" : {
+        "type" : "object",
+        "properties" : {
+          "completionDate" : {
+            "type" : "string"
+          },
+          "error" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "linkToDetail" : {
+            "$ref" : "#/components/schemas/Link"
+          },
+          "numberOfSims" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "partnerA" : {
+            "type" : "string"
+          },
+          "partnerB" : {
+            "type" : "string"
+          },
+          "startDate" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SimTransferUpdateParameters" : {
+        "required" : [ "action" ],
+        "type" : "object",
+        "properties" : {
+          "action" : {
+            "type" : "string"
+          },
+          "activationTemplateId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "offeringId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "optionIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          },
+          "profileDataParameters" : {
+            "$ref" : "#/components/schemas/ProfileDataParameters"
+          },
+          "remark01" : {
+            "type" : "string"
+          },
+          "remark02" : {
+            "type" : "string"
+          },
+          "remark03" : {
+            "type" : "string"
+          },
+          "remark04" : {
+            "type" : "string"
+          },
+          "remark05" : {
+            "type" : "string"
+          },
+          "remark06" : {
+            "type" : "string"
+          },
+          "remark07" : {
+            "type" : "string"
+          },
+          "remark08" : {
+            "type" : "string"
+          },
+          "remark09" : {
+            "type" : "string"
+          },
+          "remark10" : {
+            "type" : "string"
+          },
+          "transferRemark01" : {
+            "type" : "boolean"
+          },
+          "transferRemark02" : {
+            "type" : "boolean"
+          },
+          "transferRemark03" : {
+            "type" : "boolean"
+          },
+          "transferRemark04" : {
+            "type" : "boolean"
+          },
+          "transferRemark05" : {
+            "type" : "boolean"
+          },
+          "transferRemark06" : {
+            "type" : "boolean"
+          },
+          "transferRemark07" : {
+            "type" : "boolean"
+          },
+          "transferRemark08" : {
+            "type" : "boolean"
+          },
+          "transferRemark09" : {
+            "type" : "boolean"
+          },
+          "transferRemark10" : {
+            "type" : "boolean"
+          }
+        },
+        "description" : "Action is the only mandatory attribute which accepts only 'abort', 'accept' and 'reject' as value depending on sender or receiver."
+      },
+      "SimUnSuspendParameters" : {
+        "type" : "object",
+        "properties" : {
+          "euiccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EuiccidWrapper"
+            }
+          },
+          "iccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IccidWrapper"
+            }
+          },
+          "imsiParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ImsiWrapper"
+            }
+          }
+        },
+        "description" : "SIM identifier can be ICCID, IMSI or EUICCID. Only one type of identifier allowed per request."
+      },
+      "SimUnblockParameter" : {
+        "type" : "object",
+        "properties" : {
+          "additionalSessionLimit" : {
+            "type" : "integer",
+            "description" : "Session limit value",
+            "format" : "int64",
+            "example" : 10
+          },
+          "additionalUsageLimitValue" : {
+            "type" : "integer",
+            "description" : "Usage limit value",
+            "format" : "int64",
+            "example" : 100
+          },
+          "euiccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EuiccidWrapper"
+            }
+          },
+          "iccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IccidWrapper"
+            }
+          },
+          "imsiParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ImsiWrapper"
+            }
+          },
+          "unit" : {
+            "type" : "string",
+            "description" : "Usage unit of the limit value. Valid units: B, KB, MB, GB",
+            "example" : "MB"
+          }
+        },
+        "description" : "SIM identifier can be ICCID, IMSI or EUICCID. Only one type of identifier allowed per request."
+      },
+      "SimUnrestrictParameter" : {
+        "type" : "object",
+        "properties" : {
+          "euiccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EuiccidWrapper"
+            }
+          },
+          "iccidParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IccidWrapper"
+            }
+          },
+          "imsiParameters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ImsiWrapper"
+            }
+          }
+        },
+        "description" : "SIM identifier can be ICCID, IMSI or EUICCID. Only one type of identifier allowed per request."
+      },
+      "SmsHistoryData" : {
+        "type" : "object",
+        "properties" : {
+          "callingMsisdn" : {
+            "type" : "string"
+          },
+          "diagSetFinal" : {
+            "type" : "string"
+          },
+          "internalState" : {
+            "type" : "string"
+          },
+          "lastEventTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "origCalledMsisdn" : {
+            "type" : "string"
+          },
+          "retryCounter" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "sourceInterfaceType" : {
+            "type" : "string"
+          },
+          "submitTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "targetInterfaceType" : {
+            "type" : "string"
+          },
+          "uid" : {
+            "type" : "string"
+          }
+        }
+      },
+      "StaticIpsPerApnParameter" : {
+        "type" : "object",
+        "properties" : {
+          "apnName" : {
+            "type" : "string"
+          },
+          "ipv4AddressList" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "ipv6AddressList" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "TimeSpan" : {
+        "type" : "object",
+        "properties" : {
+          "dateFrom" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "dateTo" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      },
+      "UpdateSimTransferResult" : {
+        "required" : [ "successMessage" ],
+        "type" : "object",
+        "properties" : {
+          "links" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Link"
+            }
+          },
+          "successMessage" : {
+            "type" : "string"
+          }
+        }
+      }
+    }
+  }
+}
